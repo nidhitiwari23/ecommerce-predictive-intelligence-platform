@@ -53,78 +53,210 @@ Most businesses can see **what happened yesterday**. This platform tells them **
 <br/>
 
 ```
-╔╔══════════════════════════════════════════════════════════════════════════════════╗
-║                    E-COMMERCE PREDICTIVE INTELLIGENCE PLATFORM                    ║
-╠══════════════════════════════════════════════════════════════════════════════════ ╣
-║                                                                                   ║
-║   ┌─────────────────────────────────────────────────────────────────────────┐     ║
-║   │                            📥  DATA SOURCES                             │     ║
-║   │                                                                         │     ║
-║   │                 Olist Dataset • 100K+ Orders • 9 CSV Files              │     ║
-║   └─────────────────────────────────────────────────────────────────────────┘     ║
-║                                        │                                          ║
-║                                        ▼                                          ║
-║   ┌─────────────────────────────────────────────────────────────────────────┐     ║
-║   │                    🔧  DATA PIPELINE  (Layers 1–3)                      │    ║
-║   │                                                                         │     ║
-║   │  data_loader.py      →  data_cleaner.py     →  feature_engineer.py     │      ║
-║   │                                                                         │     ║
-║   │  ┌───────────────┐      ┌──────────────┐       ┌──────────────────┐    │      ║
-║   │  │ Schema valid. │      │ Remove dupes │       │ RFM Scoring      │    │      ║
-║   │  │ 8 CSV → Dict  │  ──▶ │ Fix outliers │  ──▶  │ 19 Features      │    │     ║
-║   │  │ Memory logging│      │ Parse dates  │       │ Churn Label      │    │      ║
-║   │  └───────────────┘      └──────────────┘       │ Master Table     │    │      ║
-║   │                                                 └──────────────────┘    │     ║
-║   └─────────────────────────────────────────────────────────────────────────┘     ║
-║                                        │                                          ║
-║                    master_features.parquet  (1 row per customer)                ║
-║                                        │                                        ║
-║                                        ▼                                        ║
-║   ┌────────────────────────────────────────────────────────────────────────┐    ║
-║   │                      🤖  ML MODEL LAYER  (Layer 4)                     │    ║
-║   │                                                                        │    ║
-║   │  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   │    ║
-║   │  │ 🎯 CHURN MODEL   │   │ 📦 FORECASTING   │   │ 👥 SEGMENTATION  │   │    ║
-║   │  │ Algorithm:       │   │ Algorithm:       │   │ Algorithm:       │   │    ║
-║   │  │ XGBoost + SMOTE  │   │ Prophet + LSTM   │   │ K-Means (k=4)    │   │    ║
-║   │  │ + Optuna tuning  │   │ Hybrid Ensemble  │   │ + Hierarchical   │   │    ║
-║   │  │ ROC-AUC: 0.891   │   │ MAPE: 5.9%       │   │ Silhouette:0.42 │   │    ║
-║   │  │ Precision:0.834  │   │ Prophet: 6.8%    │   │ Segments:       │   │    ║
-║   │  │ Recall:0.782     │   │ LSTM: 7.1%       │   │ Champions       │   │    ║
-║   │  │ F1:0.807         │   │ Horizon:30 days  │   │ Loyalists       │   │    ║
-║   │  └──────────────────┘   └──────────────────┘   │ At-Risk         │   │    ║
-║   │                                                 │ Bargain Hunters │   │    ║
-║   │                                                 └──────────────────┘   │    ║
-║   │                                                                        │    ║
-║   │  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   │    ║
-║   │  │ 💰 CLV MODEL     │   │ 🚨 ANOMALY DET.  │   │ 💬 SENTIMENT NLP │   │    ║
-║   │  │ Algorithm:       │   │ Algorithm:       │   │ Algorithm:       │   │    ║
-║   │  │ LightGBM         │   │ Isolation Forest │   │ TextBlob + NLTK  │   │    ║
-║   │  │ + Optuna tuning  │   │ + Z-Score       │   │ Polarity Score   │   │    ║
-║   │  │ RMSE:82.4        │   │ F1:0.870        │   │ Subjectivity     │   │    ║
-║   │  │ MAE:61.2         │   │ Precision:0.891 │   │ 9 Text Features  │   │    ║
-║   │  │ R²:0.847         │   │ Auto-explain    │   │ Complaint/Praise │   │    ║
-║   │  └──────────────────┘   └──────────────────┘   └──────────────────┘   │    ║
-║   └────────────────────────────────────────────────────────────────────────┘    ║
-║                                        │                                        ║
-║               ┌────────────────────────┴──────────────────────┐                ║
-║               ▼                                               ▼                ║
-║   ┌────────────────────────────┐       ┌────────────────────────────────────┐   ║
-║   │       📡 MLOPS LAYER       │       │         🖥️ SERVING LAYER          │   ║
-║   │  MLflow Tracking           │       │  FastAPI REST Server              │   ║
-║   │  • Experiment logs         │       │  POST /predict/churn              │   ║
-║   │  • Model versions          │       │  POST /predict/churn/batch        │   ║
-║   │  • Metrics history         │       │  GET /model/info                  │   ║
-║   │                            │       │  GET /health                      │   ║
-║   │  Evidently AI              │       │  <100ms response time             │   ║
-║   │  • Weekly KS-test          │       │                                    │   ║
-║   │  • Drift HTML report       │       │  Interactive Dashboards           │   ║
-║   │  • Auto-alert p<0.15       │       │  • HTML/CSS/Bootstrap            │   ║
-║   └────────────────────────────┘       │  • Power BI (.pbix)               │   ║
-║                                        │  • Plotly Charts                  │   ║
-║                                        └────────────────────────────────────┘   ║
-╚══════════════════════════════════════════════════════════════════════════════════╝
-```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>E-Commerce Predictive Intelligence Platform</title>
+<style>
+    body{
+        margin:0;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+        color:#fff;
+    }
+    h1{
+        text-align:center;
+        padding:30px 10px;
+        font-size:32px;
+        letter-spacing:2px;
+    }
+    .container{
+        width:95%;
+        margin:auto;
+        padding-bottom:60px;
+    }
+    .box{
+        background:#1b2a33;
+        border-radius:12px;
+        padding:20px;
+        margin:20px 0;
+        box-shadow:0 8px 20px rgba(0,0,0,0.4);
+    }
+    .title{
+        font-size:22px;
+        margin-bottom:15px;
+        border-bottom:2px solid #00d9ff;
+        padding-bottom:8px;
+    }
+    .row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:20px;
+    }
+    .card{
+        flex:1;
+        min-width:260px;
+        background:#243844;
+        padding:15px;
+        border-radius:10px;
+        box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    }
+    .card h3{
+        margin-top:0;
+        color:#00e5ff;
+    }
+    ul{
+        padding-left:18px;
+        line-height:1.6;
+    }
+    .center{
+        text-align:center;
+        margin:15px 0;
+        font-weight:bold;
+        color:#00e5ff;
+    }
+    footer{
+        text-align:center;
+        padding:20px;
+        font-size:14px;
+        opacity:0.7;
+    }
+</style>
+</head>
+<body>
+
+<h1>E-Commerce Predictive Intelligence Platform</h1>
+
+<div class="container">
+
+    <!-- Data Sources -->
+    <div class="box">
+        <div class="title">📥 Data Sources</div>
+        <div class="center">Olist Dataset • 100K+ Orders • 9 CSV Files</div>
+    </div>
+
+    <!-- Data Pipeline -->
+    <div class="box">
+        <div class="title">🔧 Data Pipeline (Layers 1–3)</div>
+        <div class="row">
+            <div class="card">
+                <h3>data_loader.py</h3>
+                <ul>
+                    <li>Schema validation</li>
+                    <li>8 CSV → Dictionary</li>
+                    <li>Memory logging</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>data_cleaner.py</h3>
+                <ul>
+                    <li>Remove duplicates</li>
+                    <li>Fix outliers</li>
+                    <li>Parse dates</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>feature_engineer.py</h3>
+                <ul>
+                    <li>RFM Scoring</li>
+                    <li>19 Features</li>
+                    <li>Churn Label</li>
+                    <li>Master Table</li>
+                </ul>
+            </div>
+        </div>
+        <div class="center">master_features.parquet (1 row per customer)</div>
+    </div>
+
+    <!-- ML Layer -->
+    <div class="box">
+        <div class="title">🤖 ML Model Layer (Layer 4)</div>
+        <div class="row">
+            <div class="card">
+                <h3>🎯 Churn Model</h3>
+                <ul>
+                    <li>XGBoost + SMOTE + Optuna</li>
+                    <li>ROC-AUC: 0.891 | F1: 0.807</li>
+                    <li>Precision: 0.834 | Recall: 0.782</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>📦 Forecasting</h3>
+                <ul>
+                    <li>Prophet + LSTM Hybrid</li>
+                    <li>MAPE: 5.9%</li>
+                    <li>30-day Horizon</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>👥 Segmentation</h3>
+                <ul>
+                    <li>K-Means (k=4) + Hierarchical</li>
+                    <li>Silhouette: 0.42</li>
+                    <li>Champions, Loyalists, At-Risk, Bargain Hunters</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>💰 CLV Model</h3>
+                <ul>
+                    <li>LightGBM + Optuna</li>
+                    <li>R²: 0.847 | RMSE: 82.4</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>🚨 Anomaly Detection</h3>
+                <ul>
+                    <li>Isolation Forest + Z-Score</li>
+                    <li>F1: 0.870 | Precision: 0.891</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>💬 Sentiment NLP</h3>
+                <ul>
+                    <li>TextBlob + NLTK</li>
+                    <li>Polarity, Subjectivity, 9 Text Features</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MLOps + Serving -->
+    <div class="box">
+        <div class="title">📡 MLOps & 🖥️ Serving Layer</div>
+        <div class="row">
+            <div class="card">
+                <h3>📡 MLOps</h3>
+                <ul>
+                    <li>MLflow experiment tracking</li>
+                    <li>Evidently AI drift detection</li>
+                    <li>Weekly KS-Test alerts</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>🖥️ FastAPI Serving</h3>
+                <ul>
+                    <li>/predict/churn</li>
+                    <li>/predict/churn/batch</li>
+                    <li>/model/info | /health</li>
+                    <li>&lt;100ms response</li>
+                </ul>
+            </div>
+            <div class="card">
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 E-Commerce Predictive Intelligence Platform
+</footer>
+
+</body>
+</html>
 
 <br/>
 
@@ -141,8 +273,8 @@ Most businesses can see **what happened yesterday**. This platform tells them **
     │
     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  STEP 1 — data_loader.py                                             │
-│                                                                      │
+│  STEP 1 — data_loader.py                                            │
+│                                                                     │
 │  Input  → data/raw/*.csv  (8 Olist CSV files on your computer)      │
 │  Action → Validates column names  |  Logs memory usage              │
 │  Output → Python dictionary with 8 DataFrames loaded in memory      │
@@ -150,8 +282,8 @@ Most businesses can see **what happened yesterday**. This platform tells them **
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  STEP 2 — data_cleaner.py                                            │
-│                                                                      │
+│  STEP 2 — data_cleaner.py                                           │
+│                                                                     │
 │  Input  → 8 raw DataFrames from Step 1                              │
 │  Action → Remove duplicates  |  Fix dates  |  Cap price outliers    │
 │           Remove impossible delivery dates  |  Fill missing values  │
@@ -160,8 +292,8 @@ Most businesses can see **what happened yesterday**. This platform tells them **
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  STEP 3 — feature_engineer.py                                        │
-│                                                                      │
+│  STEP 3 — feature_engineer.py                                       │
+│                                                                     │
 │  Input  → 8 clean DataFrames from Step 2                            │
 │  Action → Merge all 8 tables on order_id / customer_id              │
 │           Create RFM scores  |  Delivery features  |  Churn label   │
@@ -198,8 +330,8 @@ Most businesses can see **what happened yesterday**. This platform tells them **
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  STEP 5 — monitoring/drift_detector.py                               │
-│                                                                      │
+│  STEP 5 — monitoring/drift_detector.py                              │
+│                                                                     │
 │  Input  → Current production data  +  reference_data.parquet        │
 │  Action → KS-test on all 9 features  |  Evidently HTML report       │
 │           Alert if p-value < 0.15 on any feature                    │
@@ -208,8 +340,8 @@ Most businesses can see **what happened yesterday**. This platform tells them **
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  STEP 6 — api/main.py   (Run separately: uvicorn api.main:app)       │
-│                                                                      │
+│  STEP 6 — api/main.py   (Run separately: uvicorn api.main:app)      │
+│                                                                     │
 │  Input  → HTTP POST request with customer JSON data                 │
 │  Action → Load .pkl models  |  Validate request (Pydantic)          │
 │           Scale features  |  Predict probability                    │
