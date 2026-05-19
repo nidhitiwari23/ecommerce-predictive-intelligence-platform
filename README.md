@@ -53,90 +53,76 @@ Most businesses can see **what happened yesterday**. This platform tells them **
 <br/>
 
 ```
-╔══════════════════════════════════════════════════════════════════════════════════╗
-║                    E-COMMERCE PREDICTIVE INTELLIGENCE PLATFORM                  ║
-╠══════════════════════════════════════════════════════════════════════════════════╣
-║                                                                                  ║
-║   ┌─────────────────────────────────────────────────────────────────────────┐   ║
-║   │                        📥  DATA SOURCES                                 │   ║
-║   │                                                                         │   ║
-║   │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────────┐   │   ║
-║   │  │  Olist Dataset  │     ║
-║   │  │  100K+ Orders   │    │   │   ║
-║   │  │  9 CSV Files    │    │ ║
-║   │  └────────┬────────┘  └────────┬────────┘  └──────────┬───────────┘   │   ║
-║   └───────────┼────────────────────┼──────────────────────┼───────────────┘   ║
-║               └────────────────────┴──────────────────────┘                    ║
+╔╔══════════════════════════════════════════════════════════════════════════════════╗
+║                    E-COMMERCE PREDICTIVE INTELLIGENCE PLATFORM                    ║
+╠══════════════════════════════════════════════════════════════════════════════════ ╣
+║                                                                                   ║
+║   ┌─────────────────────────────────────────────────────────────────────────┐     ║
+║   │                            📥  DATA SOURCES                             │     ║
+║   │                                                                         │     ║
+║   │                 Olist Dataset • 100K+ Orders • 9 CSV Files              │     ║
+║   └─────────────────────────────────────────────────────────────────────────┘     ║
+║                                        │                                          ║
+║                                        ▼                                          ║
+║   ┌─────────────────────────────────────────────────────────────────────────┐     ║
+║   │                    🔧  DATA PIPELINE  (Layers 1–3)                      │    ║
+║   │                                                                         │     ║
+║   │  data_loader.py      →  data_cleaner.py     →  feature_engineer.py     │      ║
+║   │                                                                         │     ║
+║   │  ┌───────────────┐      ┌──────────────┐       ┌──────────────────┐    │      ║
+║   │  │ Schema valid. │      │ Remove dupes │       │ RFM Scoring      │    │      ║
+║   │  │ 8 CSV → Dict  │  ──▶ │ Fix outliers │  ──▶  │ 19 Features      │    │     ║
+║   │  │ Memory logging│      │ Parse dates  │       │ Churn Label      │    │      ║
+║   │  └───────────────┘      └──────────────┘       │ Master Table     │    │      ║
+║   │                                                 └──────────────────┘    │     ║
+║   └─────────────────────────────────────────────────────────────────────────┘     ║
+║                                        │                                          ║
+║                    master_features.parquet  (1 row per customer)                ║
 ║                                        │                                        ║
 ║                                        ▼                                        ║
-║   ┌─────────────────────────────────────────────────────────────────────────┐   ║
-║   │                    🔧  DATA PIPELINE  (Layers 1–3)                      │   ║
-║   │                                                                         │   ║
-║   │  data_loader.py      →  data_cleaner.py     →  feature_engineer.py     │   ║
-║   │  ┌───────────────┐      ┌──────────────┐       ┌──────────────────┐    │   ║
-║   │  │ Schema valid. │      │ Remove dupes │       │ RFM Scoring      │    │   ║
-║   │  │ 8 CSV → Dict  │  ──▶ │ Fix outliers │  ──▶  │ 19 Features      │    │   ║
-║   │  │ Memory logging│      │ Parse dates  │       │ Churn Label      │    │   ║
-║   │  └───────────────┘      └──────────────┘       │ Master Table     │    │   ║
-║   │                                                 └──────────────────┘    │   ║
-║   └─────────────────────────────────────────────────────────────────────────┘   ║
-║                                        │                                        ║
-║                    ┌───────────────────┘                                        ║
-║                    │    master_features.parquet  (1 row per customer)           ║
-║                    └───────────────────────────────────────┐                   ║
-║                                        │                   │                   ║
-║                                        ▼                   ▼                   ║
-║   ┌────────────────────────────────────────────────────────────────────────┐   ║
-║   │                      🤖  ML MODEL LAYER  (Layer 4)                     │   ║
-║   │                                                                        │   ║
-║   │  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   │   ║
-║   │  │ 🎯 CHURN MODEL   │   │ 📦 FORECASTING   │   │ 👥 SEGMENTATION  │   │   ║
-║   │  │                  │   │                  │   │                  │   │   ║
-║   │  │ Algorithm:       │   │ Algorithm:       │   │ Algorithm:       │   │   ║
-║   │  │ XGBoost + SMOTE  │   │ Prophet + LSTM   │   │ K-Means (k=4)   │   │   ║
-║   │  │ + Optuna tuning  │   │ Hybrid Ensemble  │   │ + Hierarchical  │   │   ║
-║   │  │                  │   │                  │   │                  │   │   ║
-║   │  │ ROC-AUC: 0.891   │   │ MAPE:    5.9%    │   │ Silhouette:0.42 │   │   ║
-║   │  │ Precision: 0.834 │   │ Prophet: 6.8%    │   │ 4 Segments:     │   │   ║
-║   │  │ Recall:    0.782 │   │ LSTM:    7.1%    │   │ Champions       │   │   ║
-║   │  │ F1:        0.807 │   │ Horizon: 30 days │   │ Loyalists       │   │   ║
-║   │  └──────────────────┘   └──────────────────┘   │ At-Risk         │   │   ║
-║   │                                                 │ Bargain Hunters │   │   ║
-║   │  ┌──────────────────┐   ┌──────────────────┐   └──────────────────┘   │   ║
-║   │  │ 💰 CLV MODEL     │   │ 🚨 ANOMALY DET.  │   ┌──────────────────┐   │   ║
-║   │  │                  │   │                  │   │ 💬 SENTIMENT NLP │   │   ║
-║   │  │ Algorithm:       │   │ Algorithm:       │   │                  │   │   ║
-║   │  │ LightGBM         │   │ Isolation Forest │   │ TextBlob + NLTK  │   │   ║
-║   │  │ + Optuna tuning  │   │ + Z-Score        │   │ Polarity Score   │   │   ║
-║   │  │                  │   │ Contamination:2% │   │ Subjectivity     │   │   ║
-║   │  │ RMSE:    82.4    │   │ F1:      0.870   │   │ 9 Text Features  │   │   ║
-║   │  │ MAE:     61.2    │   │ Precision:0.891  │   │ Complaint Words  │   │   ║
-║   │  │ R²:      0.847   │   │ Auto-explain     │   │ Praise Words     │   │   ║
-║   │  └──────────────────┘   └──────────────────┘   └──────────────────┘   │   ║
-║   └────────────────────────────────────────────────────────────────────────┘   ║
+║   ┌────────────────────────────────────────────────────────────────────────┐    ║
+║   │                      🤖  ML MODEL LAYER  (Layer 4)                     │    ║
+║   │                                                                        │    ║
+║   │  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   │    ║
+║   │  │ 🎯 CHURN MODEL   │   │ 📦 FORECASTING   │   │ 👥 SEGMENTATION  │   │    ║
+║   │  │ Algorithm:       │   │ Algorithm:       │   │ Algorithm:       │   │    ║
+║   │  │ XGBoost + SMOTE  │   │ Prophet + LSTM   │   │ K-Means (k=4)    │   │    ║
+║   │  │ + Optuna tuning  │   │ Hybrid Ensemble  │   │ + Hierarchical   │   │    ║
+║   │  │ ROC-AUC: 0.891   │   │ MAPE: 5.9%       │   │ Silhouette:0.42 │   │    ║
+║   │  │ Precision:0.834  │   │ Prophet: 6.8%    │   │ Segments:       │   │    ║
+║   │  │ Recall:0.782     │   │ LSTM: 7.1%       │   │ Champions       │   │    ║
+║   │  │ F1:0.807         │   │ Horizon:30 days  │   │ Loyalists       │   │    ║
+║   │  └──────────────────┘   └──────────────────┘   │ At-Risk         │   │    ║
+║   │                                                 │ Bargain Hunters │   │    ║
+║   │                                                 └──────────────────┘   │    ║
+║   │                                                                        │    ║
+║   │  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   │    ║
+║   │  │ 💰 CLV MODEL     │   │ 🚨 ANOMALY DET.  │   │ 💬 SENTIMENT NLP │   │    ║
+║   │  │ Algorithm:       │   │ Algorithm:       │   │ Algorithm:       │   │    ║
+║   │  │ LightGBM         │   │ Isolation Forest │   │ TextBlob + NLTK  │   │    ║
+║   │  │ + Optuna tuning  │   │ + Z-Score       │   │ Polarity Score   │   │    ║
+║   │  │ RMSE:82.4        │   │ F1:0.870        │   │ Subjectivity     │   │    ║
+║   │  │ MAE:61.2         │   │ Precision:0.891 │   │ 9 Text Features  │   │    ║
+║   │  │ R²:0.847         │   │ Auto-explain    │   │ Complaint/Praise │   │    ║
+║   │  └──────────────────┘   └──────────────────┘   └──────────────────┘   │    ║
+║   └────────────────────────────────────────────────────────────────────────┘    ║
 ║                                        │                                        ║
 ║               ┌────────────────────────┴──────────────────────┐                ║
-║               │                                               │                ║
 ║               ▼                                               ▼                ║
-║   ┌────────────────────────────┐       ┌────────────────────────────────────┐  ║
-║   │   📡  MLOPS LAYER          │       │   🖥️  SERVING LAYER               │  ║
-║   │                            │       │                                    │  ║
-║   │  ┌──────────────────────┐  │       │  ┌──────────────────────────────┐  │  ║
-║   │  │  MLflow Tracking     │  │       │  │  FastAPI REST Server         │  │  ║
-║   │  │  • Experiment logs   │  │       │  │  POST /predict/churn         │  │  ║
-║   │  │  • Model versions    │  │       │  │  POST /predict/churn/batch   │  │  ║
-║   │  │  • Metrics history   │  │       │  │  GET  /model/info            │  │  ║
-║   │  └──────────────────────┘  │       │  │  GET  /health                │  │  ║
-║   │  ┌──────────────────────┐  │       │  │  < 100ms response time       │  │  ║
-║   │  │  Evidently AI        │  │       │  └──────────────────────────────┘  │  ║
-║   │  │  • Weekly KS-test    │  │       │                                    │  ║
-║   │  │  • Drift HTML report │  │       │  ┌──────────────────────────────┐  │  ║
-║   │  │  • Auto-alert if     │  │       │  │  Interactive Dashboards      │  │  ║
-║   │  │    p-value < 0.15    │  │       │  │  • HTML/CSS/Bootstrap        │  │  ║
-║   │  └──────────────────────┘  │       │  │  • Power BI (.pbix)          │  │  ║
-║   └────────────────────────────┘       │  │  • Plotly Charts             │  │  ║
-║                                        │  └──────────────────────────────┘  │  ║
-║                                        └────────────────────────────────────┘  ║
+║   ┌────────────────────────────┐       ┌────────────────────────────────────┐   ║
+║   │       📡 MLOPS LAYER       │       │         🖥️ SERVING LAYER          │   ║
+║   │  MLflow Tracking           │       │  FastAPI REST Server              │   ║
+║   │  • Experiment logs         │       │  POST /predict/churn              │   ║
+║   │  • Model versions          │       │  POST /predict/churn/batch        │   ║
+║   │  • Metrics history         │       │  GET /model/info                  │   ║
+║   │                            │       │  GET /health                      │   ║
+║   │  Evidently AI              │       │  <100ms response time             │   ║
+║   │  • Weekly KS-test          │       │                                    │   ║
+║   │  • Drift HTML report       │       │  Interactive Dashboards           │   ║
+║   │  • Auto-alert p<0.15       │       │  • HTML/CSS/Bootstrap            │   ║
+║   └────────────────────────────┘       │  • Power BI (.pbix)               │   ║
+║                                        │  • Plotly Charts                  │   ║
+║                                        └────────────────────────────────────┘   ║
 ╚══════════════════════════════════════════════════════════════════════════════════╝
 ```
 
