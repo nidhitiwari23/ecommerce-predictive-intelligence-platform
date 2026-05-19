@@ -13,7 +13,6 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![MLflow](https://img.shields.io/badge/MLflow-2.11-0194E2?style=for-the-badge&logo=mlflow&logoColor=white)](https://mlflow.org)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/ecommerce-predictive-intelligence-platform?style=for-the-badge&color=f59e0b)](https://github.com/YOUR_USERNAME/ecommerce-predictive-intelligence-platform)
 
 <br/>
 
@@ -21,7 +20,7 @@
 
 <br/>
 
-[🚀 Quick Start](#-quick-start) &nbsp;·&nbsp; [📊 Results](#-model-results) &nbsp;·&nbsp; [🏗️ Architecture](#%EF%B8%8F-system-architecture) &nbsp;·&nbsp; [📁 File Guide](#-complete-file-guide) &nbsp;·&nbsp; [💼 Interview Prep](#-interview-talking-points)
+[🚀 Quick Start](#-quick-start) &nbsp;·&nbsp; [📊 Results](#-model-results) &nbsp;·&nbsp; [🏗️ Architecture](#%EF%B8%8F-system-architecture) &nbsp;·&nbsp; [📁 File Guide](#-complete-file-guide) &nbsp;·&nbsp; 
 
 </div>
 
@@ -37,9 +36,9 @@ Most businesses can see **what happened yesterday**. This platform tells them **
 
 | 🔴 The Problem | 🟢 Our Solution | 📈 Business Impact |
 |:---|:---|:---|
-| Can't predict which customers will leave | XGBoost Churn Model (AUC **0.891**) | Retain customers before they leave — save **~R$2.4M/quarter** |
+| Can't predict which customers will leave | XGBoost Churn Model (AUC **0.891**) | Retain customers before they leave  |
 | Manual demand forecasting is 20–25% wrong | Prophet + LSTM Hybrid (MAPE **5.9%**) | Right inventory levels → fewer stockouts & wastage |
-| No idea who your best customers are | K-Means Segmentation (Silhouette **0.42**) | Targeted marketing to the right segment |
+| No idea who your best customers are | K-Means Segmentation  | Targeted marketing to the right segment |
 | Fraud detection is manual and slow | Isolation Forest Anomaly Detection | Flags suspicious transactions automatically |
 | Models degrade silently after deployment | Evidently AI Drift Monitoring | Weekly alerts before accuracy drops |
 
@@ -62,9 +61,9 @@ Most businesses can see **what happened yesterday**. This platform tells them **
 ║   │                        📥  DATA SOURCES                                 │   ║
 ║   │                                                                         │   ║
 ║   │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────────┐   │   ║
-║   │  │  Olist Dataset  │  │ UCI Retail II   │  │ Behavior Clickstream │   │   ║
-║   │  │  100K+ Orders   │  │  1M+ Rows       │  │  5M Events (sample)  │   │   ║
-║   │  │  9 CSV Files    │  │  UK Gift Shop   │  │  View/Cart/Purchase  │   │   ║
+║   │  │  Olist Dataset  │     ║
+║   │  │  100K+ Orders   │    │   │   ║
+║   │  │  9 CSV Files    │    │ ║
 ║   │  └────────┬────────┘  └────────┬────────┘  └──────────┬───────────┘   │   ║
 ║   └───────────┼────────────────────┼──────────────────────┼───────────────┘   ║
 ║               └────────────────────┴──────────────────────┘                    ║
@@ -254,8 +253,7 @@ Most businesses can see **what happened yesterday**. This platform tells them **
 | # | Dataset | Source | Size | Used For |
 |:---:|:---|:---|:---:|:---|
 | 1 | **Olist Brazilian E-Commerce** | [📥 Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | 100K+ rows | Primary — all 6 models |
-| 2 | **UCI Online Retail II** | [📥 UCI ML Repo](https://archive.ics.uci.edu/dataset/502/online+retail+ii) | 1M+ rows | RFM validation |
-| 3 | **E-Commerce Behavior Data** | [📥 Kaggle](https://www.kaggle.com/datasets/mkechinov/ecommerce-behavior-data-from-multi-category-store) | 5M sample | Clickstream features |
+
 
 </div>
 
@@ -486,66 +484,9 @@ ecommerce-predictive-intelligence-platform/
 
 ---
 
-## 🗺️ 8-Week GitHub Commit Roadmap
 
-```
-Week 1 ██████████  Project setup, data loader, requirements, README
-Week 2 ██████████  Data cleaning, feature engineering, date parsing
-Week 3 ██████████  EDA notebooks, trend charts, geographic analysis
-Week 4 ██████████  RFM scoring, K-Means clustering, segment labeling
-Week 5 ██████████  Churn model (XGBoost + SMOTE + Optuna + SHAP)
-Week 6 ██████████  Forecasting (Prophet → LSTM → Hybrid), sentiment NLP
-Week 7 ██████████  MLflow tracking, Evidently monitoring, FastAPI server
-Week 8 ██████████  HTML dashboard, Power BI, README polish, v1.0.0 tag
-         ↑
-    ~7 commits per week = 56 total commits = consistent green squares ✅
-```
 
----
 
-## 💼 Interview Talking Points
-
-<details>
-<summary><b>❓ Why XGBoost for churn prediction?</b></summary>
-<br/>
-
-Compared four models — Logistic Regression (0.741), Random Forest (0.841), LightGBM (0.876), XGBoost **(0.891)**. XGBoost won consistently in 5-fold cross-validation. Additionally, XGBoost provides SHAP values for explainability — I can tell business stakeholders exactly why a specific customer is flagged as at-risk. I also used Optuna for hyperparameter tuning which improved AUC from 0.862 to 0.891.
-
-</details>
-
-<details>
-<summary><b>❓ How did you handle class imbalance?</b></summary>
-<br/>
-
-Only 18% of customers churned — a significant imbalance. I applied three techniques: **(1)** SMOTE to create synthetic minority-class examples, **(2)** `scale_pos_weight` parameter in XGBoost, **(3)** threshold optimisation — scanning thresholds 0.2–0.8 and selecting the one maximising F1-score. Without this, a naive model achieves 82% accuracy just by predicting "no churn" for everyone — completely useless for the business.
-
-</details>
-
-<details>
-<summary><b>❓ What is model drift and how did you handle it?</b></summary>
-<br/>
-
-Model drift occurs when real-world data changes after deployment, silently degrading model accuracy. I implemented weekly drift monitoring using Evidently AI and the Kolmogorov-Smirnov statistical test. Each week it compares current feature distributions against the training reference data. If the KS p-value drops below 0.15 for any important feature, a critical alert is logged and the retraining pipeline triggers automatically.
-
-</details>
-
-<details>
-<summary><b>❓ Why a hybrid model for demand forecasting?</b></summary>
-<br/>
-
-Prophet excels at capturing yearly seasonality, weekly patterns, and Brazilian public holidays — but struggles with complex non-linear dependencies. LSTM captures those non-linear patterns but needs more data and tuning. The weighted ensemble (55% Prophet + 45% LSTM) achieves **5.9% MAPE** — better than either model alone (6.8% and 7.1% respectively) — by combining their complementary strengths.
-
-</details>
-
-<details>
-<summary><b>❓ What is the business impact of this project?</b></summary>
-<br/>
-
-Retaining 20% of predicted churners with a targeted campaign (assuming R$15,000 average CLV): for every 1,000 flagged customers → **~R$30 lakhs revenue protected per quarter**. On the forecasting side, reducing MAPE from 20–25% (manual) to 5.9% directly translates to lower inventory holding costs and fewer stockout situations — typically worth 3–5% of annual inventory cost.
-
-</details>
-
----
 
 ## 📂 Output Files Reference
 
@@ -561,15 +502,7 @@ Retaining 20% of predicted churners with a targeted campaign (assuming R$15,000 
 
 ---
 
-## 🤝 Contributing
 
-1. Fork this repository
-2. Create a feature branch: `git checkout -b feature/your-improvement`
-3. Commit your changes: `git commit -m "feat: add your improvement"`
-4. Push to the branch: `git push origin feature/your-improvement`
-5. Open a Pull Request
-
----
 
 ## 📜 License
 
@@ -577,19 +510,4 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ---
 
-<div align="center">
 
-**Built with ❤️ as an industry-level Data Science portfolio project**
-
-*If this project helped you, please consider giving it a ⭐*
-
-<br/>
-
-[![GitHub followers](https://img.shields.io/github/followers/YOUR_USERNAME?style=social)](https://github.com/YOUR_USERNAME)
-[![Twitter Follow](https://img.shields.io/twitter/follow/YOUR_HANDLE?style=social)](https://twitter.com/YOUR_HANDLE)
-
-<br/>
-
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:14b8a6,50:1e56a0,100:0f2d5e&height=100&section=footer"/>
-
-</div>
