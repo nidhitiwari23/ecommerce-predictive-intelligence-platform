@@ -259,8 +259,6 @@ Most businesses can see **what happened yesterday**. This platform tells them **
 | # | Dataset | Source | Size | Used For |
 |:---:|:---|:---|:---:|:---|
 | 1 | **Olist Brazilian E-Commerce** | [📥 Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | 100K+ rows | Primary — all 6 models |
-| 2 | **UCI Online Retail II** | [📥 UCI ML Repo](https://archive.ics.uci.edu/dataset/502/online+retail+ii) | 1M+ rows | RFM validation |
-| 3 | **E-Commerce Behavior Data** | [📥 Kaggle](https://www.kaggle.com/datasets/mkechinov/ecommerce-behavior-data-from-multi-category-store) | 5M sample | Clickstream features |
 
 </div>
 
@@ -491,88 +489,8 @@ ecommerce-predictive-intelligence-platform/
 
 ---
 
-## 🗺️ 8-Week GitHub Commit Roadmap
 
-```
-Week 1 ██████████  Project setup, data loader, requirements, README
-Week 2 ██████████  Data cleaning, feature engineering, date parsing
-Week 3 ██████████  EDA notebooks, trend charts, geographic analysis
-Week 4 ██████████  RFM scoring, K-Means clustering, segment labeling
-Week 5 ██████████  Churn model (XGBoost + SMOTE + Optuna + SHAP)
-Week 6 ██████████  Forecasting (Prophet → LSTM → Hybrid), sentiment NLP
-Week 7 ██████████  MLflow tracking, Evidently monitoring, FastAPI server
-Week 8 ██████████  HTML dashboard, Power BI, README polish, v1.0.0 tag
-         ↑
-    ~7 commits per week = 56 total commits = consistent green squares ✅
-```
 
----
-
-## 💼 Interview Talking Points
-
-<details>
-<summary><b>❓ Why XGBoost for churn prediction?</b></summary>
-<br/>
-
-Compared four models — Logistic Regression (0.741), Random Forest (0.841), LightGBM (0.876), XGBoost **(0.891)**. XGBoost won consistently in 5-fold cross-validation. Additionally, XGBoost provides SHAP values for explainability — I can tell business stakeholders exactly why a specific customer is flagged as at-risk. I also used Optuna for hyperparameter tuning which improved AUC from 0.862 to 0.891.
-
-</details>
-
-<details>
-<summary><b>❓ How did you handle class imbalance?</b></summary>
-<br/>
-
-Only 18% of customers churned — a significant imbalance. I applied three techniques: **(1)** SMOTE to create synthetic minority-class examples, **(2)** `scale_pos_weight` parameter in XGBoost, **(3)** threshold optimisation — scanning thresholds 0.2–0.8 and selecting the one maximising F1-score. Without this, a naive model achieves 82% accuracy just by predicting "no churn" for everyone — completely useless for the business.
-
-</details>
-
-<details>
-<summary><b>❓ What is model drift and how did you handle it?</b></summary>
-<br/>
-
-Model drift occurs when real-world data changes after deployment, silently degrading model accuracy. I implemented weekly drift monitoring using Evidently AI and the Kolmogorov-Smirnov statistical test. Each week it compares current feature distributions against the training reference data. If the KS p-value drops below 0.15 for any important feature, a critical alert is logged and the retraining pipeline triggers automatically.
-
-</details>
-
-<details>
-<summary><b>❓ Why a hybrid model for demand forecasting?</b></summary>
-<br/>
-
-Prophet excels at capturing yearly seasonality, weekly patterns, and Brazilian public holidays — but struggles with complex non-linear dependencies. LSTM captures those non-linear patterns but needs more data and tuning. The weighted ensemble (55% Prophet + 45% LSTM) achieves **5.9% MAPE** — better than either model alone (6.8% and 7.1% respectively) — by combining their complementary strengths.
-
-</details>
-
-<details>
-<summary><b>❓ What is the business impact of this project?</b></summary>
-<br/>
-
-Retaining 20% of predicted churners with a targeted campaign (assuming R$15,000 average CLV): for every 1,000 flagged customers → **~R$30 lakhs revenue protected per quarter**. On the forecasting side, reducing MAPE from 20–25% (manual) to 5.9% directly translates to lower inventory holding costs and fewer stockout situations — typically worth 3–5% of annual inventory cost.
-
-</details>
-
----
-
-## 📂 Output Files Reference
-
-| File | Location | How to Open |
-|:---|:---|:---|
-| Interactive Dashboard | `reports/html/dashboard.html` | Double-click → opens in browser |
-| MLflow Experiments | Auto-saved to `mlruns/` | Run `mlflow ui` → visit localhost:5000 |
-| Drift Reports | `reports/drift_reports/*.html` | Double-click → opens in browser |
-| Trained Models | `models/saved/*.pkl` | Load with `pickle.load()` in Python |
-| Processed Data | `data/processed/*.parquet` | Load with `pd.read_parquet()` |
-| Pipeline Logs | `logs/pipeline_YYYYMMDD.log` | Open in any text editor |
-| API Documentation | Starts with FastAPI server | Visit `localhost:8000/docs` |
-
----
-
-## 🤝 Contributing
-
-1. Fork this repository
-2. Create a feature branch: `git checkout -b feature/your-improvement`
-3. Commit your changes: `git commit -m "feat: add your improvement"`
-4. Push to the branch: `git push origin feature/your-improvement`
-5. Open a Pull Request
 
 ---
 
@@ -582,19 +500,3 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ---
 
-<div align="center">
-
-**Built with ❤️ as an industry-level Data Science portfolio project**
-
-*If this project helped you, please consider giving it a ⭐*
-
-<br/>
-
-[![GitHub followers](https://img.shields.io/github/followers/YOUR_USERNAME?style=social)](https://github.com/YOUR_USERNAME)
-[![Twitter Follow](https://img.shields.io/twitter/follow/YOUR_HANDLE?style=social)](https://twitter.com/YOUR_HANDLE)
-
-<br/>
-
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:14b8a6,50:1e56a0,100:0f2d5e&height=100&section=footer"/>
-
-</div>
